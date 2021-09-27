@@ -457,7 +457,7 @@ namespace vgjs {
         n_exp::coroutine_handle<> m_coro;   ///<handle of the coroutine
         bool m_is_parent_function = current_job() == nullptr ? true : current_job()->is_function(); ///<is the parent a Function or nullptr?
         bool* m_ready_ptr = nullptr;        ///<points to flag which is true if value is ready, else false
-        bool m_self_destruct = false;
+        bool m_self_destruct = false;       ///<If true it is a coroutine that destructs itself
 
     public:
         /**
