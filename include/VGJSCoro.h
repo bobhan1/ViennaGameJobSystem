@@ -116,7 +116,8 @@ namespace vgjs {
 
 
     //---------------------------------------------------------------------------------------------------
-    //Awaitables
+    //Awaitables do not offer a co_await() operator. They are therefore also Awaiters and thus support
+    //await_ready, await_suspend and await_resume
 
     /**
     * \brief This can be called as co_await parameter. It constructs a tuple
@@ -132,9 +133,7 @@ namespace vgjs {
         return std::tuple<Ts&&...>(std::forward<Ts>(args)...);
     }
 
-
-    using suspend_always = n_exp::suspend_always;
-
+    using suspend_always = n_exp::suspend_always; //simplify usage
 
     /**
     * \brief Awaitable for changing the thread that the coro is run on.
@@ -245,7 +244,7 @@ namespace vgjs {
         * \returns true if nothing is to be done, else false
         */
         bool await_ready() noexcept {               //suspend only if there is something to do
-            auto f = [&, this]<std::size_t... Idx>(std::index_sequence<Idx...>) {
+            auto f = [&]<std::size_t... Idx>(std::index_sequence<Idx...>) {
                 m_number = (size(std::get<Idx>(m_tuple)) + ... + 0); //called for every tuple element
             };
             f(std::make_index_sequence<sizeof...(Ts)>{}); //call f and create an integer list going from 0 to sizeof(Ts)-1
@@ -264,7 +263,7 @@ namespace vgjs {
         *
         */
         bool await_suspend(n_exp::coroutine_handle<Coro_promise<PT>> h) noexcept {
-            auto g = [&, this]<std::size_t Idx>() {
+            auto g = [&]<std::size_t Idx>() {
 
                 using tt = decltype(m_tuple);
                 using T = decltype(std::get<Idx>(std::forward<tt>(m_tuple)));
@@ -274,24 +273,12 @@ namespace vgjs {
                     return;
                 }
                 else {
-                    /*if constexpr (std::is_reference_v<T>) {
-                        if constexpr (std::is_rvalue_reference_v<T>) {
-                            int i = 1;
-                        }
-                        else {
-                            int i = 2;
-                        }
-                    }
-                    else {
-                        int i = 3;
-                    }*/
-
                     schedule(std::forward<T>(children), m_tag, &h.promise(), (int)m_number);   //in first call the number of children is the total number of all jobs
                     m_number = 0;                                               //after this always 0
                 }
             };
 
-            auto f = [&, this]<std::size_t... Idx>(std::index_sequence<Idx...>) {
+            auto f = [&]<std::size_t... Idx>(std::index_sequence<Idx...>) {
                 ( g.template operator() <Idx> (), ...); //called for every tuple element
             };
 
