@@ -68,13 +68,19 @@ namespace func {
     }
 
 
+    void end() {
+        std::cout << "Ending func test() " << cnt << "\n";
+    }
+
     void test() {
         cnt = 0;
         std::cout << "Starting func test()\n";
 
-        schedule([=]() { driver(13); });
+        std::function<void(void)> f([]() { driver(13); }); // = std::bind( driver, 13 );
 
-        continuation([=]() { std::cout << "Ending func test() " << cnt << "\n"; });
+        schedule(f);
+
+        continuation(end);
     }
 
 

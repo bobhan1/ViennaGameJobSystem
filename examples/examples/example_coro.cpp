@@ -187,7 +187,7 @@ namespace coro {
 
         //std::cout << "After coroTest1() " << std::endl;
 
-        co_return 0;
+        co_return 0.0f;
     }
 
     Coro<int> coroTest(int i) {
@@ -227,7 +227,7 @@ namespace coro {
         //co_await *pyt;
         //std::cout << "Yielding " << yt.get().value() << "\n";
 
-        co_await coroTest(i);
+        int res = co_await coroTest(i);
 
         //auto ct = coroTest(i);  //this starts a new tree
         //ct.resume();
