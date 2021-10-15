@@ -215,7 +215,7 @@ namespace coro {
 
     JobQueue<Coro<int>> coro_queue;
 
-    Coro<> driver( int i) {
+    Coro<float> driver( int i) {
 
         coro_queue.push( &yt );
 
@@ -224,8 +224,8 @@ namespace coro {
         auto* pyt = coro_queue.pop();
 
         g_yt_in = i;
-        //co_await *pyt;
-        //std::cout << "Yielding " << yt.get().value() << "\n";
+        co_await *pyt;
+        std::cout << "Yielding " << pyt->get() << "\n";
 
         int res = co_await coroTest(i);
 
@@ -238,7 +238,7 @@ namespace coro {
 
         std::cout << "End coroTest() " << cnt << std::endl;
 
-        co_return ;
+        co_return 0.0f;
     }
 
 	void test() {
@@ -248,7 +248,10 @@ namespace coro {
         //auto dr = driver(4);  //this starts a new tree
         //dr.resume();
 
-        schedule(driver(13));
+        Coro<float> retObj = driver(4);  //this starts a new tree
+        schedule(retObj);
+
+        if(retObj.ready()) std::cout << "Result " << retObj.get() << std::endl;
 
         std::cout << "Ending coro test()\n";
 
