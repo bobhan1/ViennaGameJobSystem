@@ -183,7 +183,8 @@ namespace coro {
         //std::cout << "Before coroTest1() " << std::endl;
         co_await thread_index_t{ 1 };
 
-        co_await coroTest2(i);
+        auto retObj = coroTest2(i);
+        co_await retObj;
 
         //std::cout << "After coroTest1() " << std::endl;
 
