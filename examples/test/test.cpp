@@ -311,6 +311,7 @@ int main(int argc, char* argv[])
 {
 	int num = argc > 1 ? std::stoi(argv[1]) : 0;
 	JobSystem js(thread_count_t{ num });
+	js.enable_logging();
 
 	schedule(test::start_test());
 

@@ -356,7 +356,7 @@ namespace vgjs {
     */
     class JobSystem {
         static inline const uint32_t c_queue_capacity = 1<<10; ///<save at most N Jobs for recycling
-        static inline const bool c_enable_logging = false;
+        static inline const bool c_enable_logging = true;
 
     private:
         static inline std::atomic<uint64_t>             m_init_counter = 0;     ///<Use as flag in constructor to prevent multiple inits
